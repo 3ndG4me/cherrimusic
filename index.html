@@ -5,9 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CHERRI</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap">
   <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body class="wall-texture">
 
   <!-- Loading Overlay -->
   <div id="loadingOverlay" class="loading-overlay">
@@ -58,11 +61,31 @@
     <!-- <a href="#" target="_blank">Shop</a> -->
   </div>
 
+  <!-- Upcoming Show (revealed only when Bandsintown returns an event) -->
+  <section class="hero hero-show" id="upcomingShow">
+    <h1>Upcoming Show</h1>
+    <a class="polaroid" id="showPolaroid" href="#" target="_blank" rel="noopener noreferrer">
+      <div class="polaroid-photo">
+        <img id="showImage" src="https://placehold.co/600x600/1a1a1a/f5f0eb?text=CHERRI" alt="Upcoming show">
+      </div>
+      <div class="polaroid-caption">
+        <span class="polaroid-date" id="showDate"></span>
+        <span class="polaroid-venue" id="showVenue"></span>
+        <span class="polaroid-location" id="showLocation"></span>
+      </div>
+    </a>
+    <a class="hero-cta" id="showTickets" href="#" target="_blank" rel="noopener noreferrer">Get Tickets</a>
+  </section>
+
   <!-- Hero / Latest Release -->
   <section class="hero">
-    <p class="hero-subtitle">Latest Release</p>
-    <h1 class="hero-title">CHERRI</h1>
-    <img class="hero-artwork" src="https://placehold.co/600x600/1a1a1a/f5f0eb?text=Album+Art" alt="Latest Release Artwork">
+    <h1>Latest Release</h1>
+    <!-- Swap for <img class="hero-artwork" src="..." alt="Latest Release Artwork"> once real art exists -->
+    <div class="hero-artwork art-placeholder" role="img" aria-label="Latest release artwork placeholder">
+      <i class="fas fa-compact-disc"></i>
+      <span class="art-placeholder-label">Album Art</span>
+      <span class="art-placeholder-dims">3000 &times; 3000</span>
+    </div>
     <a class="hero-cta" href="#" target="_blank">Listen Now</a>
   </section>
 
@@ -107,5 +130,7 @@
 
   <script src="js/main.js"></script>
   <script src="js/videos.js"></script>
+  <script src="js/shows-data.js"></script>
+  <script src="js/upcoming.js"></script>
 </body>
 </html>

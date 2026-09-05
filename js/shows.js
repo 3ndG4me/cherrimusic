@@ -1,52 +1,101 @@
-// ── Bandsintown Shows Fetching ──
+// ── Shows page card mockups (polaroid + sticky note) ──
 (function () {
-  var ARTIST_NAME = 'CHERRI';
-  var API_URL = 'https://rest.bandsintown.com/artists/' +
-    encodeURIComponent(ARTIST_NAME) +
-    '/events?app_id=26113258b4b0ab3265bf61cdb27edeab';
-
-  var list = document.getElementById('showsList');
+  var polaroidGrid = document.getElementById('showsGridPolaroid');
+  var stickyGrid = document.getElementById('showsGridSticky');
   var loader = document.getElementById('showLoader');
 
-  if (!list) return;
+  if (!polaroidGrid || !stickyGrid || !window.CherriShows) return;
 
-  fetchShows();
+  var NOTE_COLORS = [
+    '#ffe14d', '#ff9ec0', '#8ce0c0', '#8fcbff',
+    '#ffb26b', '#c9a5ff', '#d7f26a', '#ff7f7f'
+  ];
 
-  async function fetchShows() {
-    try {
-      var resp = await fetch(API_URL);
-      var events = await resp.json();
+  // Draws from a reshuffled pool so colors stay random but never repeat back to back.
+  var colorPool = [];
+  var lastColor = null;
 
-      if (loader) loader.style.display = 'none';
-
-      if (!Array.isArray(events) || events.length === 0) {
-        list.innerHTML = '<p class="no-shows">No upcoming shows. Check back soon.</p>';
-        return;
-      }
-
-      events.forEach(function (evt) {
-        var date = new Date(evt.datetime);
-        var dateStr = date.toLocaleDateString('en-US', {
-          month: 'short',
-          day: 'numeric',
-          year: 'numeric'
-        });
-
-        var item = document.createElement('div');
-        item.className = 'show-item';
-        item.innerHTML =
-          '<div class="show-date">' + dateStr + '</div>' +
-          '<div class="show-info">' +
-            '<span class="show-venue">' + evt.venue.name + '</span>' +
-            '<span class="show-location">' + evt.venue.city + ', ' + (evt.venue.region || evt.venue.country) + '</span>' +
-          '</div>' +
-          '<a class="show-tickets" href="' + evt.url + '" target="_blank" rel="noopener noreferrer">Tickets</a>';
-
-        list.appendChild(item);
-      });
-    } catch (err) {
-      if (loader) loader.style.display = 'none';
-      list.innerHTML = '<p class="no-shows">Unable to load shows. Please try again later.</p>';
+  function nextColor() {
+    if (!colorPool.length) {
+      colorPool = NOTE_COLORS.slice().sort(function () { return Math.random() - 0.5; });
+      if (colorPool[0] === lastColor) colorPool.push(colorPool.shift());
     }
+    lastColor = colorPool.shift();
+    return lastColor;
+  }
+
+  window.CherriShows.fetchEvents().then(function (events) {
+    if (loader) loader.style.display = 'none';
+
+    if (!events.length) {
+      polaroidGrid.innerHTML = '<p class="no-shows">No upcoming shows. Check back soon.</p>';
+      return;
+    }
+
+    events.forEach(function (evt, i) {
+      polaroidGrid.appendChild(buildPolaroid(evt, i));
+      stickyGrid.appendChild(buildSticky(evt, i));
+    });
+  });
+
+  function el(tag, cls, text) {
+    var node = document.createElement(tag);
+    if (cls) node.className = cls;
+    if (text != null) node.textContent = text;
+    return node;
+  }
+
+  // Alternates lean direction down the row, with a random magnitude so it never looks mechanical.
+  function tiltFor(index) {
+    var magnitude = 1.4 + Math.random() * 2.1;
+    return (index % 2 === 0 ? -magnitude : magnitude).toFixed(2) + 'deg';
+  }
+
+  function card(evt, cls, index) {
+    var a = el('a', cls);
+    a.href = evt.url || '#';
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.style.setProperty('--tilt', tiltFor(index));
+    return a;
+  }
+
+  function details(evt) {
+    return {
+      date: window.CherriShows.formatDate(evt.datetime, { weekday: 'short', month: 'short', day: 'numeric' }),
+      venue: evt.venue.name,
+      location: window.CherriShows.formatLocation(evt.venue)
+    };
+  }
+
+  function buildPolaroid(evt, index) {
+    var d = details(evt);
+    var a = card(evt, 'polaroid polaroid--sm', index);
+
+    var photo = el('div', 'polaroid-photo');
+    var ph = el('div', 'polaroid-photo-ph');
+    ph.appendChild(el('i', 'fas fa-camera'));
+    photo.appendChild(ph);
+
+    var caption = el('div', 'polaroid-caption');
+    caption.appendChild(el('span', 'polaroid-date', d.date));
+    caption.appendChild(el('span', 'polaroid-venue', d.venue));
+    caption.appendChild(el('span', 'polaroid-location', d.location));
+
+    a.appendChild(photo);
+    a.appendChild(caption);
+    return a;
+  }
+
+  function buildSticky(evt, index) {
+    var d = details(evt);
+    var a = card(evt, 'sticky-note', index);
+    a.style.setProperty('--note-color', nextColor());
+
+    a.appendChild(el('span', 'sticky-date', d.date));
+    a.appendChild(el('span', 'sticky-venue', d.venue));
+    a.appendChild(el('span', 'sticky-location', d.location));
+    a.appendChild(el('span', 'sticky-cta', 'Tickets'));
+    return a;
   }
 })();

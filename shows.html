@@ -5,9 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Shows | CHERRI</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap">
   <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body class="wall-texture">
 
   <!-- Navigation -->
   <nav class="site-nav">
@@ -42,7 +45,12 @@
       <div class="loader-dot"></div>
       <div class="loader-dot"></div>
     </div>
-    <div class="shows-list" id="showsList"></div>
+
+    <p class="style-label">Option A &mdash; Polaroid</p>
+    <div class="shows-grid" id="showsGridPolaroid"></div>
+
+    <p class="style-label">Option B &mdash; Sticky Note</p>
+    <div class="shows-grid" id="showsGridSticky"></div>
   </section>
 
   <!-- Footer -->
@@ -60,6 +68,7 @@
   </footer>
 
   <script src="js/main.js"></script>
+  <script src="js/shows-data.js"></script>
   <script src="js/shows.js"></script>
 </body>
 </html>

@@ -4,6 +4,13 @@
   src: url('../fonts/Cherrihandwriting-Regular.ttf') format('truetype');
 }
 
+:root {
+  --wall-base: #efe8df;
+  --wall-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.3'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='500'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.015 0.017' numOctaves='4' seed='11' stitchTiles='stitch' result='t'/%3E%3CfeDiffuseLighting in='t' lighting-color='%23ffffff' surfaceScale='2.5'%3E%3CfeDistantLight azimuth='235' elevation='60'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='500' height='500' filter='url(%23p)'/%3E%3C/svg%3E");
+}
+
 *, *::before, *::after {
   margin: 0;
   padding: 0;
@@ -44,7 +51,7 @@ img {
 .loading-overlay {
   position: fixed;
   inset: 0;
-  background: #f5f0eb;
+  background: var(--wall-base);
   z-index: 9999;
   display: flex;
   justify-content: center;
@@ -105,11 +112,12 @@ img {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border-bottom: 1px solid rgba(26, 26, 26, 0.12);
   transition: transform 0.35s ease, background 0.35s ease;
 }
 
 .site-nav.scrolled {
-  background: rgba(245, 240, 235, 0.95);
+  background: rgba(239, 232, 223, 0.95);
   backdrop-filter: blur(10px);
 }
 
@@ -194,7 +202,7 @@ img {
   display: none;
   position: fixed;
   inset: 0;
-  background: #f5f0eb;
+  background: var(--wall-base);
   z-index: 999;
   flex-direction: column;
   justify-content: center;
@@ -236,9 +244,40 @@ img {
 .hero-artwork {
   max-width: 420px;
   width: 80%;
+  aspect-ratio: 1 / 1;
   margin: 32px auto;
   border-radius: 4px;
   box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+}
+
+.art-placeholder {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  color: #f5f0eb;
+  background:
+    repeating-linear-gradient(45deg, rgba(255,255,255,0.035) 0 14px, transparent 14px 28px),
+    #1a1a1a;
+  border: 2px dashed rgba(245,240,235,0.3);
+}
+
+.art-placeholder i {
+  font-size: 2.4rem;
+  opacity: 0.5;
+}
+
+.art-placeholder-label {
+  font-size: 0.95rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.art-placeholder-dims {
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  color: rgba(245, 240, 235, 0.5);
 }
 
 .hero-subtitle {
@@ -263,6 +302,100 @@ img {
   background: #1a1a1a;
   color: #f5f0eb;
   opacity: 1;
+}
+
+/* ── Upcoming Show Polaroid ── */
+.hero-show {
+  display: none;
+}
+
+.hero-show.is-active {
+  display: flex;
+  animation: overlayFadeIn 0.9s ease-out;
+}
+
+.polaroid {
+  display: block;
+  position: relative;
+  max-width: 420px;
+  width: 80%;
+  margin: 32px auto;
+  padding: 16px 16px 0;
+  background: linear-gradient(#fffdf7, #f7f2e9);
+  border-radius: 3px;
+  box-shadow: 0 18px 50px rgba(0,0,0,0.18), 0 2px 4px rgba(0,0,0,0.08);
+  transform: rotate(-2.5deg);
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+/* Strip of masking tape holding the polaroid to the page */
+.polaroid::before {
+  content: '';
+  position: absolute;
+  z-index: 3;
+  top: -14px;
+  left: 50%;
+  width: 110px;
+  height: 30px;
+  transform: translateX(-50%) rotate(-3.5deg);
+  background:
+    linear-gradient(115deg, rgba(255,255,255,0.5), rgba(255,255,255,0) 45%),
+    rgba(214, 199, 165, 0.78);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.16);
+  clip-path: polygon(4% 0, 0 30%, 3% 62%, 0 100%, 100% 100%, 97% 66%, 100% 34%, 96% 0);
+}
+
+.polaroid:hover {
+  transform: rotate(0deg) translateY(-8px);
+  box-shadow: 0 28px 70px rgba(0,0,0,0.24), 0 2px 4px rgba(0,0,0,0.08);
+  opacity: 1;
+}
+
+.polaroid-photo {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  background: #ddd7d0;
+  overflow: hidden;
+}
+
+.polaroid-photo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 24px rgba(0,0,0,0.18);
+  pointer-events: none;
+}
+
+.polaroid-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.polaroid-caption {
+  font-family: 'Permanent Marker', 'Cherri', cursive;
+  color: #23303d;
+  text-align: center;
+  line-height: 1.35;
+  padding: 20px 10px 26px;
+  transform: rotate(-1.2deg);
+}
+
+.polaroid-date {
+  display: block;
+  font-size: 1.15rem;
+  letter-spacing: 0.01em;
+}
+
+.polaroid-venue {
+  display: block;
+  font-size: 0.9rem;
+}
+
+.polaroid-location {
+  display: block;
+  font-size: 0.75rem;
+  opacity: 0.7;
 }
 
 /* ── Sections ── */
@@ -467,6 +600,154 @@ img {
   letter-spacing: 0.06em;
 }
 
+/* ── Wall Spackle Texture ── */
+body.wall-texture {
+  background-color: var(--wall-base);
+  background-image: var(--wall-image);
+  background-size: 300px 300px, 500px 500px;
+  background-blend-mode: overlay, multiply;
+  background-attachment: fixed;
+}
+
+/* ── Shows Grid (card mockups) ── */
+.style-label {
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 0.72rem;
+  color: #8a8079;
+  margin-bottom: 34px;
+}
+
+.shows-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 48px 32px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.shows-grid + .style-label {
+  margin-top: 96px;
+}
+
+/* Small polaroid variant */
+.polaroid--sm {
+  max-width: none;
+  width: 100%;
+  margin: 0;
+  padding: 11px 11px 0;
+  transform: rotate(var(--tilt, -2deg));
+  box-shadow: 0 10px 26px rgba(0,0,0,0.16), 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.polaroid--sm:hover {
+  transform: rotate(0deg) translateY(-6px);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.22), 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.polaroid--sm::before {
+  top: -11px;
+  width: 76px;
+  height: 24px;
+}
+
+.polaroid--sm .polaroid-caption {
+  padding: 12px 6px 16px;
+  line-height: 1.25;
+}
+
+.polaroid--sm .polaroid-date { font-size: 0.85rem; }
+.polaroid--sm .polaroid-venue { font-size: 0.68rem; }
+.polaroid--sm .polaroid-location { font-size: 0.58rem; }
+
+.polaroid-photo-ph {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: rgba(26,26,26,0.22);
+  font-size: 1.6rem;
+}
+
+/* Sticky note variant */
+.sticky-note {
+  --curl: 30px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 3px;
+  aspect-ratio: 1 / 1;
+  padding: 20px 16px;
+  background: var(--note-color, #ffe14d);
+  color: #23303d;
+  font-family: 'Permanent Marker', 'Cherri', cursive;
+  text-align: center;
+  line-height: 1.25;
+  transform: rotate(var(--tilt, -2deg));
+  box-shadow: 0 10px 22px rgba(0,0,0,0.16);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Shading that sells the lifted corner */
+.sticky-note::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(closest-side at 100% 100%, rgba(0,0,0,0.22), rgba(0,0,0,0)) 100% 100% / 74px 74px no-repeat,
+    linear-gradient(to top, rgba(0,0,0,0.06), rgba(0,0,0,0) 28%);
+  pointer-events: none;
+}
+
+/* Underside of the paper peeling up at the bottom-right corner */
+.sticky-note::after {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  right: 0;
+  bottom: 0;
+  width: var(--curl);
+  height: var(--curl);
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+  background: linear-gradient(to top left,
+    color-mix(in srgb, var(--note-color, #ffe14d) 12%, #ffffff) 0%,
+    color-mix(in srgb, var(--note-color, #ffe14d) 48%, #ffffff) 48%,
+    color-mix(in srgb, var(--note-color, #ffe14d) 80%, #000000) 100%);
+  filter: drop-shadow(-2px -2px 3px rgba(0,0,0,0.28));
+  pointer-events: none;
+}
+
+.sticky-note:hover {
+  transform: rotate(0deg) translateY(-6px);
+  box-shadow: 0 18px 34px rgba(0,0,0,0.22);
+  opacity: 1;
+}
+
+.sticky-date {
+  font-size: 0.95rem;
+}
+
+.sticky-venue {
+  font-size: 0.72rem;
+}
+
+.sticky-location {
+  font-size: 0.62rem;
+  opacity: 0.7;
+}
+
+.sticky-cta {
+  margin-top: 8px;
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  border-bottom: 1.5px solid currentColor;
+}
+
 /* ── Footer ── */
 .site-footer {
   padding: 60px 40px;
@@ -546,6 +827,11 @@ img {
   }
 
   .hero-artwork {
+    max-width: 300px;
+    width: 85%;
+  }
+
+  .polaroid {
     max-width: 300px;
     width: 85%;
   }
