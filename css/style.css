@@ -47,6 +47,15 @@ img {
   display: block;
 }
 
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 /* ── Loading Overlay ── */
 .loading-overlay {
   position: fixed;
@@ -72,10 +81,19 @@ img {
 .loading-title {
   font-family: 'Cherri', cursive;
   font-size: clamp(3.5rem, 10vw, 6rem);
+  /* Height and mark width match what the old "CHERRI" text measured, so the layout is unchanged */
+  height: 1.6em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   color: #1a1a1a;
   margin-bottom: 8px;
   letter-spacing: 0.02em;
   animation: overlayFadeIn 1s ease-out;
+}
+
+.loading-title .logo-mark {
+  width: 2.445em;
 }
 
 .loading-cherry {
@@ -126,10 +144,23 @@ img {
 }
 
 .nav-logo {
-  font-family: 'Cherri', cursive;
-  font-size: 1.6rem;
-  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
   color: #1a1a1a;
+}
+
+/* Source PNG carries wide transparent margins; these values crop the box to the artwork. */
+.logo-mark {
+  display: block;
+  aspect-ratio: 2.794 / 1;
+  background-image: url('../img/cherri_logo.png');
+  background-repeat: no-repeat;
+  background-size: 127.3% auto;
+  background-position: 70% 43.2%;
+}
+
+.nav-logo .logo-mark {
+  height: 1.55rem;
 }
 
 .nav-links {
@@ -219,6 +250,74 @@ img {
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: #1a1a1a;
+}
+
+/* ── Logo Wall (Home) ── */
+.logo-wall {
+  display: grid;
+  grid-template-columns: 1fr minmax(0, 2.1fr) 1fr;
+  align-items: center;
+  gap: 48px;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 190px 24px 90px;
+}
+
+.logo-wall-title {
+  justify-self: center;
+  width: 100%;
+}
+
+.logo-wall-title .logo-mark {
+  width: 100%;
+}
+
+.wall-photo {
+  justify-self: center;
+  width: 100%;
+  max-width: 210px;
+}
+
+/* Share the 24px margin line used by the flank column below */
+.wall-photo--left { margin-top: -46px; justify-self: start; }
+.wall-photo--right { margin-top: 54px; justify-self: end; }
+
+/* ── Flanking Photo Wall (Home) ── */
+.flanked {
+  position: relative;
+  overflow-x: clip;
+}
+
+/* Below the gutter breakpoint the photos sit a layer behind the content.
+   --flank-y-sm lets each one dodge the opaque content there so its tape stays visible. */
+.flank {
+  position: absolute;
+  z-index: -1;
+  top: var(--flank-y-sm, var(--flank-y, 20%));
+  width: clamp(128px, 38vw, 180px);
+}
+
+.flank--left { left: -32px; }
+.flank--right { right: -32px; }
+
+@media (min-width: 1000px) {
+  .flank {
+    top: var(--flank-y, 20%);
+    width: clamp(130px, 12vw, 190px);
+  }
+
+  /* Both anchors resolve to the same x: sections are already the 1100px band,
+     the full-bleed hero has to derive it, and 24px keeps photos off the window edge. */
+  .section.flanked .flank--left { left: 24px; }
+  .section.flanked .flank--right { right: 24px; }
+  .hero.flanked .flank--left { left: max(24px, calc(50% - 526px)); }
+  .hero.flanked .flank--right { right: max(24px, calc(50% - 526px)); }
+
+  .hero.flanked,
+  .section.flanked {
+    padding-left: clamp(180px, 17vw, 250px);
+    padding-right: clamp(180px, 17vw, 250px);
+  }
 }
 
 /* ── Hero (Landing Page) ── */
@@ -334,10 +433,10 @@ img {
   position: absolute;
   z-index: 3;
   top: -14px;
-  left: 50%;
+  left: var(--tape-x, 50%);
   width: 110px;
   height: 30px;
-  transform: translateX(-50%) rotate(-3.5deg);
+  transform: translateX(-50%) rotate(var(--tape-tilt, -3.5deg));
   background:
     linear-gradient(115deg, rgba(255,255,255,0.5), rgba(255,255,255,0) 45%),
     rgba(214, 199, 165, 0.78);
@@ -349,6 +448,23 @@ img {
   transform: rotate(0deg) translateY(-8px);
   box-shadow: 0 28px 70px rgba(0,0,0,0.24), 0 2px 4px rgba(0,0,0,0.08);
   opacity: 1;
+}
+
+/* Decorative wall photo: fills its slot and holds its tilt (no hover response) */
+.polaroid--pin,
+.polaroid--pin:hover {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 12px 12px 34px;
+  transform: rotate(var(--tilt, -3deg));
+  box-shadow: 0 12px 30px rgba(0,0,0,0.17), 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.polaroid--pin::before {
+  top: -11px;
+  width: 74px;
+  height: 23px;
 }
 
 .polaroid-photo {
@@ -609,16 +725,7 @@ body.wall-texture {
   background-attachment: fixed;
 }
 
-/* ── Shows Grid (card mockups) ── */
-.style-label {
-  text-align: center;
-  text-transform: uppercase;
-  letter-spacing: 0.22em;
-  font-size: 0.72rem;
-  color: #8a8079;
-  margin-bottom: 34px;
-}
-
+/* ── Shows Grid ── */
 .shows-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -626,40 +733,6 @@ body.wall-texture {
   max-width: 900px;
   margin: 0 auto;
 }
-
-.shows-grid + .style-label {
-  margin-top: 96px;
-}
-
-/* Small polaroid variant */
-.polaroid--sm {
-  max-width: none;
-  width: 100%;
-  margin: 0;
-  padding: 11px 11px 0;
-  transform: rotate(var(--tilt, -2deg));
-  box-shadow: 0 10px 26px rgba(0,0,0,0.16), 0 1px 3px rgba(0,0,0,0.08);
-}
-
-.polaroid--sm:hover {
-  transform: rotate(0deg) translateY(-6px);
-  box-shadow: 0 18px 40px rgba(0,0,0,0.22), 0 1px 3px rgba(0,0,0,0.08);
-}
-
-.polaroid--sm::before {
-  top: -11px;
-  width: 76px;
-  height: 24px;
-}
-
-.polaroid--sm .polaroid-caption {
-  padding: 12px 6px 16px;
-  line-height: 1.25;
-}
-
-.polaroid--sm .polaroid-date { font-size: 0.85rem; }
-.polaroid--sm .polaroid-venue { font-size: 0.68rem; }
-.polaroid--sm .polaroid-location { font-size: 0.58rem; }
 
 .polaroid-photo-ph {
   position: absolute;
@@ -748,6 +821,37 @@ body.wall-texture {
   border-bottom: 1.5px solid currentColor;
 }
 
+/* Hero-scale sticky note, sized to match the polaroid it is an alternative to */
+.sticky-note--lg {
+  --curl: 52px;
+  max-width: 420px;
+  width: 80%;
+  margin: 32px auto;
+  padding: 34px 30px;
+  gap: 8px;
+  box-shadow: 0 18px 44px rgba(0,0,0,0.18);
+}
+
+.sticky-note--lg::before {
+  background:
+    radial-gradient(closest-side at 100% 100%, rgba(0,0,0,0.24), rgba(0,0,0,0)) 100% 100% / 140px 140px no-repeat,
+    linear-gradient(to top, rgba(0,0,0,0.06), rgba(0,0,0,0) 28%);
+}
+
+.sticky-note--lg .sticky-date { font-size: 1.75rem; }
+.sticky-note--lg .sticky-venue { font-size: 1.05rem; }
+.sticky-note--lg .sticky-location { font-size: 0.8rem; }
+
+/* Mockup heading marking the two Upcoming Show options */
+.style-label {
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 0.72rem;
+  color: #8a8079;
+  margin-bottom: 10px;
+}
+
 /* ── Footer ── */
 .site-footer {
   padding: 60px 40px;
@@ -826,12 +930,49 @@ body.wall-texture {
     padding: 100px 24px 60px;
   }
 
+  .logo-wall {
+    display: block;
+    position: relative;
+    overflow-x: clip;
+    padding: 150px 24px 90px;
+  }
+
+  .logo-wall-title {
+    max-width: 360px;
+    margin: 0 auto;
+  }
+
+  /* Same underlay treatment as the flanks, tucked below the logo */
+  .wall-photo {
+    position: absolute;
+    z-index: -1;
+    width: clamp(128px, 38vw, 180px);
+    max-width: none;
+  }
+
+  .wall-photo--left {
+    left: -32px;
+    top: 30%;
+    margin-top: 0;
+  }
+
+  .wall-photo--right {
+    right: -32px;
+    top: 40%;
+    margin-top: 0;
+  }
+
   .hero-artwork {
     max-width: 300px;
     width: 85%;
   }
 
   .hero .polaroid {
+    max-width: 300px;
+    width: 85%;
+  }
+
+  .hero .sticky-note--lg {
     max-width: 300px;
     width: 85%;
   }
@@ -888,5 +1029,9 @@ body.wall-texture {
 
   .site-nav {
     padding: 14px 18px;
+  }
+
+  .nav-logo .logo-mark {
+    height: 1.25rem;
   }
 }

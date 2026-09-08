@@ -1,28 +1,29 @@
 // ── Upcoming Show hero (home page) ──
 (function () {
-  var section = document.getElementById('upcomingShow');
-  if (!section || !window.CherriShows) return;
+  var sections = document.querySelectorAll('.upcoming-show');
+  if (!sections.length || !window.CherriShows) return;
 
   window.CherriShows.fetchEvents().then(function (events) {
     if (!events.length) return;
 
     var evt = events[0];
     var date = new Date(evt.datetime);
-
-    document.getElementById('showDate').textContent =
-      window.CherriShows.formatDate(evt.datetime, { weekday: 'short', month: 'short', day: 'numeric' });
-    document.getElementById('showVenue').textContent = evt.venue.name;
-    document.getElementById('showLocation').textContent =
-      window.CherriShows.formatLocation(evt.venue) + ' \u00b7 ' +
+    var dateStr = window.CherriShows.formatDate(evt.datetime, { weekday: 'short', month: 'short', day: 'numeric' });
+    var locationStr = window.CherriShows.formatLocation(evt.venue) + ' \u00b7 ' +
       date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
 
-    var polaroid = document.getElementById('showPolaroid');
-    var tickets = document.getElementById('showTickets');
-    if (evt.url) {
-      polaroid.href = evt.url;
-      tickets.href = evt.url;
-    }
+    sections.forEach(function (section) {
+      section.querySelector('[data-show-date]').textContent = dateStr;
+      section.querySelector('[data-show-venue]').textContent = evt.venue.name;
+      section.querySelector('[data-show-location]').textContent = locationStr;
 
-    section.classList.add('is-active');
+      if (evt.url) {
+        section.querySelectorAll('[data-show-link]').forEach(function (link) {
+          link.href = evt.url;
+        });
+      }
+
+      section.classList.add('is-active');
+    });
   });
 })();
